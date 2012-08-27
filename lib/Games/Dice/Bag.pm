@@ -47,7 +47,11 @@ sub roll {
 sub _process_die {
   my $die = shift;
 
-  my ($rolls, $size) = $die =~ /(\d*)d(\d*)/;
+  my ($rolls, $size, $mod) = $die =~ /(\d*)d(\d*)([x%]*)/;
+  if (!$size && $mod =~ /^%(.*)/) {
+    $size = 100;
+    $mod = $1;
+  }
   $rolls ||= 1;
   $size  ||= 6;
 

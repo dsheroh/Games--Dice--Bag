@@ -1,6 +1,4 @@
 
-- d% as synonym for d100
-
 - d6% for d36/d66 (roll twice and concatenate)
 
 - roll_array to get individual die results instead of summing
