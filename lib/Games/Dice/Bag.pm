@@ -32,6 +32,8 @@ sub roll {
 
     $_ = _process_die($_) if /d/;
 
+    # TODO: Remove non-digits from $_
+
     my $num = $_;
     given ($op) {
       when ('+') { $roll += $num }
@@ -40,6 +42,9 @@ sub roll {
       when ('/') { $roll /= $num }
     }
   }
+
+  # TODO: Feed @spec into a numeric evaluator instead of doing the math
+  # myself in order to get proper order of operators
 
   return $roll;
 }

@@ -3,17 +3,23 @@
 
 - roll_array to get individual die results instead of summing
 
+- OO interface
+  - Dual interface
+
 - Override main::rand() to get deterministic test results
   https://metacpan.org/source/JMELTZER/random-0.02/lib/random.pm
 
 - pod everything up
 - dist to CPAN
 
-- Upload to github
-
 - Add support for open-ended (high/low/both) rolls
 
 - Add support for ArM Quality dice
 
 - Add support for ArM Stress dice
+
+- Fudge dice
+
+- Override stringification/numification?
+  - Cool idea and likely very handy, but is it a *good* idea?
 
