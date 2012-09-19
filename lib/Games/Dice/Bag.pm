@@ -71,7 +71,12 @@ sub _process_die {
 sub _mod_percent {
   my ($rolls, $size, $mod, $total) = @_;
 
-  $size = 100;
+  if ($size) {
+    $total ||= roll_die($size);
+    $total .= roll_die($size);
+  } else {
+    $size = 100;
+  }
 
   return ($rolls, $size, $mod, $total);
 }
