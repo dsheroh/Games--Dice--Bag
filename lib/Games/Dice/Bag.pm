@@ -30,11 +30,7 @@ sub roll {
       next;
     }
 
-    $_ = _process_die($_) if /d/;
-
-    # TODO: Remove non-digits from $_
-
-    my $num = $_;
+    my $num = /d/ ? _process_die($_) : $_;
     given ($op) {
       when ('+') { $roll += $num }
       when ('-') { $roll -= $num }
@@ -43,27 +39,38 @@ sub roll {
     }
   }
 
-  # TODO: Feed @spec into a numeric evaluator instead of doing the math
-  # myself in order to get proper order of operators
-
   return $roll;
 }
+
+my %mod_map = (
+  '%'   => \&_mod_percent,
+);
 
 sub _process_die {
   my $die = shift;
 
   my ($rolls, $size, $mod) = $die =~ /(\d*)d(\d*)([x%]*)/;
-  if (!$size && $mod =~ /^%(.*)/) {
-    $size = 100;
-    $mod = $1;
+  my $total = 0;
+  while ($mod =~ s/^(.)//) {
+    ($rolls, $size, $mod, $total) = $mod_map{$1}->($rolls, $size, $mod, $total)
+      if exists $mod_map{$1};
   }
+
   $rolls ||= 1;
   $size  ||= 6;
 
-  my $total = $rolls;
+  $total ||= $rolls;
   $total += int rand($size) for 1 .. $rolls;
 
   return $total;
+}
+
+sub _mod_percent {
+  my ($rolls, $size, $mod, $total) = @_;
+
+  $size = 100;
+
+  return ($rolls, $size, $mod, $total);
 }
 
 1;
