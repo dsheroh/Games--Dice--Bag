@@ -42,8 +42,11 @@ sub roll {
   return $roll;
 }
 
+sub roll_die { int rand($_[0]) + 1 }
+
 my %mod_map = (
   '%'   => \&_mod_percent,
+  'x'   => \&_mod_x,
 );
 
 sub _process_die {
@@ -55,12 +58,12 @@ sub _process_die {
     ($rolls, $size, $mod, $total) = $mod_map{$1}->($rolls, $size, $mod, $total)
       if exists $mod_map{$1};
   }
+  return $total if $total;
 
   $rolls ||= 1;
   $size  ||= 6;
 
-  $total ||= $rolls;
-  $total += int rand($size) for 1 .. $rolls;
+  $total += roll_die($size) for 1 .. $rolls;
 
   return $total;
 }
@@ -69,6 +72,15 @@ sub _mod_percent {
   my ($rolls, $size, $mod, $total) = @_;
 
   $size = 100;
+
+  return ($rolls, $size, $mod, $total);
+}
+
+sub _mod_x {
+  my ($rolls, $size, $mod, $total) = @_;
+
+  $total ||= _roll_die($size);
+  $total *= _roll_die($size);
 
   return ($rolls, $size, $mod, $total);
 }
