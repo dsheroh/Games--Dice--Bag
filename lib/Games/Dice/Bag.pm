@@ -20,12 +20,12 @@ BEGIN {
 sub roll {
   my $raw_spec = shift // '';
   $raw_spec =~ s/\s//g;
-  my @spec = split '([-+*/])', $raw_spec;
+  my @spec = split '([-+*/.])', $raw_spec;
 
   my $roll = 0;
   my $op = '+';
   for (@spec) {
-    if (m|[-+*/]|) {
+    if (m|[-+*/.]|) {
       $op = $_;
       next;
     }
@@ -36,6 +36,7 @@ sub roll {
       when ('-') { $roll -= $num }
       when ('*') { $roll *= $num }
       when ('/') { $roll /= $num }
+      when ('.') { $roll .= $num }
     }
   }
 
