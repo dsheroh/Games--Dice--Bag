@@ -11,6 +11,7 @@ BEGIN {
   our @EXPORT = ();
   our @EXPORT_OK = qw(
     roll
+    roll_die
   );
   our %EXPORT_TAGS = (
     all         => [ @EXPORT, @EXPORT_OK ],
@@ -47,21 +48,28 @@ sub roll_die { int rand($_[0]) + 1 }
 
 my %mod_map = (
   '%'   => \&_mod_percent,
+  'q'   => \&_mod_quality,
+  's'   => \&_mod_stress,
   'x'   => \&_mod_x,
 );
 
 sub _process_die {
   my $die = shift;
 
-  my ($rolls, $size, $mod) = $die =~ /(\d*)d(\d*)([x%]*)/;
-  my $total = 0;
-  while ($mod =~ s/^(.)//) {
-    ($rolls, $size, $mod, $total) = $mod_map{$1}->($rolls, $size, $mod, $total)
-      if exists $mod_map{$1};
-  }
-  return $total if $total;
-
+  my ($rolls, $size, $mod) = $die =~ /(\d*)d(\d*)([qsx%].*)?/;
   $rolls ||= 1;
+  my $total = 0;
+  for (1 .. $rolls) {
+    my $die_total = 0;
+    my $tmp_mod = $mod;
+    while ($tmp_mod =~ s/^(.)//) {
+      ($size, $die_total) = $mod_map{$1}->($size, $die_total)
+        if exists $mod_map{$1};
+    }
+    $total += $die_total;
+  }
+  return $total if $mod;
+
   $size  ||= 6;
 
   $total += roll_die($size) for 1 .. $rolls;
@@ -70,25 +78,54 @@ sub _process_die {
 }
 
 sub _mod_percent {
-  my ($rolls, $size, $mod, $total) = @_;
+  my ($size, $total) = @_;
 
   if ($size) {
     $total ||= roll_die($size);
     $total .= roll_die($size);
   } else {
-    $size = 100;
+    $total = roll_die($size = 100);
   }
 
-  return ($rolls, $size, $mod, $total);
+  return ($size, $total);
+}
+
+sub _mod_quality {
+  my ($size, $total) = @_;
+  $size ||= 10;
+  
+  my $mult = 1;
+  my $roll = roll_die($size);
+  while ($roll == 1) {
+    $mult *= 2;
+    $roll = roll_die($size);
+  }
+  $roll *= $mult;
+
+  return ($size, $total + $roll);
+}
+
+sub _mod_stress {
+  my ($size, $total) = @_;
+  $size ||= 10;
+
+  my $roll = roll_die($size);
+  if ($roll == 1) {
+    $roll = _mod_quality($size, $total) * 2;
+  } elsif ($roll == $size) {
+    return ($size, 0);
+  }
+
+  return ($size, $total + $roll);
 }
 
 sub _mod_x {
-  my ($rolls, $size, $mod, $total) = @_;
+  my ($size, $total) = @_;
 
-  $total ||= _roll_die($size);
-  $total *= _roll_die($size);
+  $total ||= roll_die($size);
+  $total *= roll_die($size);
 
-  return ($rolls, $size, $mod, $total);
+  return ($size, $total);
 }
 
 1;

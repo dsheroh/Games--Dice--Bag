@@ -1,5 +1,8 @@
 
-- roll_array to get individual die results instead of summing
+- Implement botch rolls for dq
+
+- Add z modifier to dN% to roll (0 .. N-1) for each die instead of (1 .. N)
+  - This makes d10%z identical to d%
 
 - OO interface
   - Dual interface
@@ -11,10 +14,6 @@
 - dist to CPAN
 
 - Add support for open-ended (high/low/both) rolls
-
-- Add support for ArM Quality dice
-
-- Add support for ArM Stress dice
 
 - Fudge dice
 
