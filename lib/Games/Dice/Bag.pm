@@ -59,14 +59,16 @@ sub _process_die {
   my ($rolls, $size, $mod) = $die =~ /(\d*)d(\d*)([qsx%].*)?/;
   $rolls ||= 1;
   my $total = 0;
-  for (1 .. $rolls) {
-    my $die_total = 0;
-    my $tmp_mod = $mod;
-    while ($tmp_mod =~ s/^(.)//) {
-      ($size, $die_total) = $mod_map{$1}->($size, $die_total)
-        if exists $mod_map{$1};
+  if ($mod) {
+    for (1 .. $rolls) {
+      my $die_total = 0;
+      my $tmp_mod = $mod;
+      while ($tmp_mod =~ s/^(.)//) {
+        ($size, $die_total) = $mod_map{$1}->($size, $die_total)
+          if exists $mod_map{$1};
+      }
+      $total += $die_total;
     }
-    $total += $die_total;
   }
   return $total if $mod;
 
