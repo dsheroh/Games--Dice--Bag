@@ -132,3 +132,7 @@ sub _mod_x {
 
 1;
 
+__END__
+
+# ABSTRACT: Yet another dice roller module
+
