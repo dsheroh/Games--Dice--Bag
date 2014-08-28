@@ -32,13 +32,11 @@ sub roll {
     }
 
     my $num = /d/ ? _process_die($_) : $_;
-    given ($op) {
-      when ('+') { $roll += $num }
-      when ('-') { $roll -= $num }
-      when ('*') { $roll *= $num }
-      when ('/') { $roll /= $num }
-      when ('.') { $roll .= $num }
-    }
+    if    ($op eq '+') { $roll += $num }
+    elsif ($op eq '-') { $roll -= $num }
+    elsif ($op eq '*') { $roll *= $num }
+    elsif ($op eq '/') { $roll /= $num }
+    elsif ($op eq '.') { $roll .= $num }
   }
 
   return $roll;
