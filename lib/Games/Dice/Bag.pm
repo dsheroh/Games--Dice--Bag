@@ -46,6 +46,7 @@ sub roll_die { int rand($_[0]) + 1 }
 
 my %mod_map = (
   '%'   => \&_mod_percent,
+  'b'   => \&_mod_botch,
   'q'   => \&_mod_quality,
   's'   => \&_mod_stress,
   'x'   => \&_mod_x,
@@ -54,7 +55,7 @@ my %mod_map = (
 sub _process_die {
   my $die = shift;
 
-  my ($rolls, $size, $mod) = $die =~ /(\d*)d(\d*)([qsx%].*)?/;
+  my ($rolls, $size, $mod) = $die =~ /(\d*)d(\d*)([bqsx%].*)?/;
   $rolls ||= 1;
   my $total = 0;
   if ($mod) {
@@ -75,6 +76,15 @@ sub _process_die {
   $total += roll_die($size) for 1 .. $rolls;
 
   return $total;
+}
+
+sub _mod_botch {
+  my ($size, $total) = @_;
+  $size ||= 10;
+
+  $total++ if roll_die($size) == $size;
+
+  return ($size, $total);
 }
 
 sub _mod_percent {
